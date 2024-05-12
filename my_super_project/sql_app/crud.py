@@ -47,6 +47,9 @@ def delete_user(db: Session, user_id: int):
 def get_items(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Item).offset(skip).limit(limit).all()
 
+def get_item(db: Session, item_id: int):
+    return db.query(models.Item).filter(models.Item.id == item_id).first()
+
 
 def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db_item = models.Item(**item.dict(), owner_id=user_id)
@@ -54,6 +57,7 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
 
 def update_item(db: Session, item_id: int, item_update: schemas.ItemUpdate):
     db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
@@ -79,3 +83,6 @@ def create_producto(db: Session, producto: schemas.Producto):
     db.commit()
     db.refresh(db_producto)
     return db_producto
+
+######################## orden de compra #########################
+

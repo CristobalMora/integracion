@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from  sql_app import crud, models, schemas
 from sql_app.database import SessionLocal, engine   
@@ -7,6 +7,7 @@ import requests
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+router = APIRouter()
 
 # Dependency
 def get_db():
@@ -45,11 +46,13 @@ def create_item_for_user(
 ):
     return crud.create_user_item(db=db, item=item, user_id=user_id)
 
+############################################ iten ####################################
 
 @app.get("/items/", response_model=list[schemas.Item])
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+
 
 @app.put("/users/{user_id}", response_model=schemas.UserOut)
 def update_user(user_id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db)):
@@ -65,6 +68,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+
 @app.put("/items/{item_id}", response_model=schemas.Item)
 def update_item(item_id: int, item_update: schemas.ItemUpdate, db: Session = Depends(get_db)):
     db_item = crud.get_item(db, item_id=item_id)
@@ -72,12 +76,13 @@ def update_item(item_id: int, item_update: schemas.ItemUpdate, db: Session = Dep
         raise HTTPException(status_code=404, detail="Item not found")
     return crud.update_item(db=db, item_id=item_id, item_update=item_update)
 
+
 @app.delete("/items/{item_id}", response_model=schemas.Item)
 def delete_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.get_item(db, item_id=item_id)
+    db_item = crud.delete_item(db, item_id=item_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    return crud.delete_item(db=db, item_id=item_id)
+    return db_item
 
 #############################producto#################################
 
@@ -156,3 +161,8 @@ def pay_service(user_email: str, service_name: str, db: Session = Depends(get_db
     else:
         # La solicitud falló
         return {"error": f"Error sending payment request: {response.status_code} - {response.text}"}
+    
+
+
+######################################## orden de compra ################################################
+

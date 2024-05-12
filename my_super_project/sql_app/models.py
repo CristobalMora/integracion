@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 
+
 from .database import Base
 
 
@@ -34,4 +35,6 @@ class Producto(Base):
     precio = Column(Float)
     codigo = Column(String)
     tipo   = Column(String)
+
+################################### orden de compra#########################
 

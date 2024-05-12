@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class ItemBase(BaseModel):
@@ -12,7 +13,9 @@ class ItemCreate(ItemBase):
 
 class Item(ItemBase):
     id: int
-    owner_id: int
+    title: str
+    description: str | None = None
+    owner_id: int | None = None
 
     class Config:
         orm_mode = True
@@ -58,3 +61,8 @@ class ProductoId(Producto):
 
     class Config:
         orm_mode = True
+
+############################################ orden de compra  #############################
+
+
+
