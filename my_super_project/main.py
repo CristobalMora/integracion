@@ -7,7 +7,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -78,3 +77,39 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return crud.delete_item(db=db, item_id=item_id)
+
+#############################producto#################################
+@app.post("/productos/", response_model=schemas.Producto)
+def create_producto(producto: schemas.Producto, db: Session = Depends(get_db)):
+    db_producto = models.Producto(**producto.dict())
+    db.add(db_producto)
+    db.commit()
+    db.refresh(db_producto)
+    return db_producto
+
+@app.get("/productos/{producto_id}", response_model=schemas.Producto)
+def read_producto(producto_id: int, db: Session = Depends(get_db)):
+    db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail="Producto not found")
+    return db_producto
+
+@app.put("/productos/{producto_id}", response_model=schemas.Producto)
+def update_producto(producto_id: int, producto: schemas.Producto, db: Session = Depends(get_db)):
+    db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail="Producto not found")
+    for field, value in producto.dict(exclude_unset=True).items():
+        setattr(db_producto, field, value)
+    db.commit()
+    db.refresh(db_producto)
+    return db_producto
+
+@app.delete("/productos/{producto_id}", response_model=schemas.Producto)
+def delete_producto(producto_id: int, db: Session = Depends(get_db)):
+    db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
+    if db_producto is None:
+        raise HTTPException(status_code=404, detail="Producto not found")
+    db.delete(db_producto)
+    db.commit()
+    return db_producto

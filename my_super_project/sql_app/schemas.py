@@ -24,6 +24,7 @@ class ItemUpdate(ItemBase):
 
 class UserBase(BaseModel):
     email: str
+    nombre:str
 
 
 class UserCreate(UserBase):
@@ -39,6 +40,16 @@ class User(UserBase):
     id: int
     is_active: bool
     items: list[Item] = []
+
+    class Config:
+        orm_mode = True
+
+######################################### producto#######################
+class Producto(BaseModel):
+    id: int
+    nombre: str
+    precio: float
+    codigo: str
 
     class Config:
         orm_mode = True
