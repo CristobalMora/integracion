@@ -51,6 +51,7 @@ class Producto(BaseModel):
     nombre: str
     precio: float
     codigo: str
+    tipo  : str
 
     class Config:
         orm_mode = True

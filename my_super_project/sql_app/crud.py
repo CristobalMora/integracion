@@ -70,3 +70,12 @@ def delete_item(db: Session, item_id: int):
     if db_item:
         db.delete(db_item)
         db.commit()
+
+############# producto ###############################################################
+
+def create_producto(db: Session, producto: schemas.Producto):
+    db_producto = models.Producto(**producto.dict())
+    db.add(db_producto)
+    db.commit()
+    db.refresh(db_producto)
+    return db_producto

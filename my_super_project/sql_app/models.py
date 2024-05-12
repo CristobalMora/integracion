@@ -29,7 +29,9 @@ class Item(Base):
 class Producto(Base):
     __tablename__ = "productos"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String)
     precio = Column(Float)
     codigo = Column(String)
+    tipo   = Column(String)
+
