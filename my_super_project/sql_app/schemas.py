@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
 class ItemBase(BaseModel):
@@ -28,6 +28,10 @@ class ItemUpdate(ItemBase):
 class UserBase(BaseModel):
     email: str
     nombre: str
+
+    class Config:
+        orm_mode = True
+
 
 
 class UserCreate(UserBase):
@@ -71,4 +75,18 @@ class Compra(BaseModel):
     class Config:
         orm_mode = True
 
+
+class CompraBase(BaseModel):
+    owner_id: int
+    product_id: int
+
+    class Config:
+        orm_mode = True
+
+class Compra(CompraBase):
+    id: int
+    owner: Optional[UserBase]
+
+    class Config:
+        orm_mode = True
 
