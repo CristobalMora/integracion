@@ -86,3 +86,9 @@ def create_producto(db: Session, producto: schemas.Producto):
 
 ######################## orden de compra #########################
 
+def create_compra(db:Session, compra: schemas.Compra):
+    db_compra = models.Compra(**compra.dict())
+    db.add(db_compra)
+    db.commit()
+    db.refresh(db_compra)
+    return db_compra

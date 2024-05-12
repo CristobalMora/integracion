@@ -64,5 +64,11 @@ class ProductoId(Producto):
 
 ############################################ orden de compra  #############################
 
+class Compra(BaseModel):
+    id: int
+    owner_id: int | None = None
+    product_id: int | None = None
+    class Config:
+        orm_mode = True
 
 

@@ -15,6 +15,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     items = relationship("Item", back_populates="owner")
+    compras = relationship("Compra", back_populates="owner")
 
 
 class Item(Base):
@@ -36,5 +37,16 @@ class Producto(Base):
     codigo = Column(String)
     tipo   = Column(String)
 
+    compras = relationship("Compra", back_populates="product")
+
 ################################### orden de compra#########################
 
+class Compra(Base):
+    __tablename__ = "compras"
+
+    id= Column(Integer, primary_key=True, index=True)
+    owner_id = Column(Integer, ForeignKey("users.id"))
+    product_id = Column(Integer, ForeignKey("productos.id"))
+
+    owner = relationship("User", back_populates="compras")
+    product = relationship("Producto", back_populates="compras")

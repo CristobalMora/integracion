@@ -1,5 +1,5 @@
 from fastapi import Depends, FastAPI, HTTPException, APIRouter
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from  sql_app import crud, models, schemas
 from sql_app.database import SessionLocal, engine   
 import requests
@@ -165,4 +165,23 @@ def pay_service(user_email: str, service_name: str, db: Session = Depends(get_db
 
 
 ######################################## orden de compra ################################################
+@app.post("/compras/", response_model=schemas.Compra)
+def create_compra(compra: schemas.Compra, db: Session = Depends(get_db)):
+    db_compra = models.Compra(**compra.dict())
+    db.add(db_compra)
+    db.commit()
+    db.refresh(db_compra)
+    return db_compra
 
+@app.get("/compras/", response_model=list[schemas.Compra])
+def read_compras(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_compras = (
+        db.query(models.Compra)
+        .options(joinedload(models.Compra.owner))  # Cargar la relación owner
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    if not db_compras:
+        raise HTTPException(status_code=404, detail="Compras not found")
+    return db_compras
