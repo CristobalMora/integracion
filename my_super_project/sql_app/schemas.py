@@ -47,11 +47,14 @@ class User(UserBase):
 ######################################### producto #######################
 
 class Producto(BaseModel):
-    id: int
+    
     nombre: str
     precio: float
     codigo: str
     tipo  : str
+
+class ProductoId(Producto):
+    id: int
 
     class Config:
         orm_mode = True

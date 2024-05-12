@@ -96,6 +96,13 @@ def read_producto(producto_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Producto not found")
     return db_producto
 
+@app.get("/productos/", response_model=list[schemas.Producto])
+def read_productos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    db_productos = db.query(models.Producto).offset(skip).limit(limit).all()
+    if not db_productos:
+        raise HTTPException(status_code=404, detail="Productos not found")
+    return db_productos
+
 @app.put("/productos/{producto_id}", response_model=schemas.Producto)
 def update_producto(producto_id: int, producto: schemas.Producto, db: Session = Depends(get_db)):
     db_producto = db.query(models.Producto).filter(models.Producto.id == producto_id).first()
