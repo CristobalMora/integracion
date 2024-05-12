@@ -24,7 +24,7 @@ class ItemUpdate(ItemBase):
 
 class UserBase(BaseModel):
     email: str
-    nombre:str
+    nombre: str
 
 
 class UserCreate(UserBase):
@@ -44,7 +44,8 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
-######################################### producto#######################
+######################################### producto #######################
+
 class Producto(BaseModel):
     id: int
     nombre: str
