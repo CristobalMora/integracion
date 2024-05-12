@@ -28,11 +28,7 @@ class ItemUpdate(ItemBase):
 class UserBase(BaseModel):
     email: str
     nombre: str
-
-    class Config:
-        orm_mode = True
-
-
+    
 
 class UserCreate(UserBase):
     password: str
@@ -75,18 +71,4 @@ class Compra(BaseModel):
     class Config:
         orm_mode = True
 
-
-class CompraBase(BaseModel):
-    owner_id: int
-    product_id: int
-
-    class Config:
-        orm_mode = True
-
-class Compra(CompraBase):
-    id: int
-    owner: Optional[UserBase]
-
-    class Config:
-        orm_mode = True
 
