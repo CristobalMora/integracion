@@ -64,11 +64,17 @@ class ProductoId(Producto):
 
 ############################################ orden de compra  #############################
 
-class Compra(BaseModel):
+class CartItemBase(BaseModel):
+    quantity: int
+
+class CartItemCreate(CartItemBase):
+    product_id: int
+    user_id: int
+
+class CartItem(CartItemBase):
     id: int
-    owner_id: int | None = None
-    product_id: int | None = None
+    product: Producto
+    user: User
+
     class Config:
         orm_mode = True
-
-

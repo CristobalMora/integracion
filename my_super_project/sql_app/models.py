@@ -1,7 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
 from sqlalchemy.orm import relationship
 
-
 from .database import Base
 
 
@@ -15,8 +14,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     items = relationship("Item", back_populates="owner")
-    compras = relationship("Compra", back_populates="owner")
-
+    itemss = relationship("CartItem", back_populates="owner")
 
 class Item(Base):
     __tablename__ = "items"
@@ -37,16 +35,25 @@ class Producto(Base):
     codigo = Column(String)
     tipo   = Column(String)
 
-    compras = relationship("Compra", back_populates="product")
+
+   
 
 ################################### orden de compra#########################
+class CartItem(Base):
+    __tablename__ = "cart_items"
 
-class Compra(Base):
-    __tablename__ = "compras"
-
-    id= Column(Integer, primary_key=True, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    id = Column(Integer, primary_key=True)
+    quantity = Column(Integer)
     product_id = Column(Integer, ForeignKey("productos.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="compras")
-    product = relationship("Producto", back_populates="compras")
+    owner = relationship("User", back_populates="itemss")
+    product = relationship("Producto", backref="cart_items")
+
+    @property
+    def user_name(self):
+        return self.owner.nombre if self.owner else None
+
+    @property
+    def product_name(self):
+        return self.product.nombre if self.product else None

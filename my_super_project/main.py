@@ -3,11 +3,16 @@ from sqlalchemy.orm import Session, joinedload
 from  sql_app import crud, models, schemas
 from sql_app.database import SessionLocal, engine   
 import requests
+from pydantic import BaseModel
+from datetime import date, datetime
+from typing import List, Optional
+from sql_app.schemas import CartItemCreate, CartItem
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 router = APIRouter()
+
 
 # Dependency
 def get_db():
@@ -165,23 +170,28 @@ def pay_service(user_email: str, service_name: str, db: Session = Depends(get_db
 
 
 ######################################## orden de compra ################################################
-@app.post("/compras/", response_model=schemas.Compra)
-def create_compra(compra: schemas.Compra, db: Session = Depends(get_db)):
-    db_compra = models.Compra(**compra.dict())
-    db.add(db_compra)
-    db.commit()
-    db.refresh(db_compra)
-    return db_compra
 
-@app.get("/compras/", response_model=list[schemas.Compra])
-def read_compras(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    db_compras = (
-        db.query(models.Compra)
-        .options(joinedload(models.Compra.owner))  # Cargar la relación owner
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-    if not db_compras:
-        raise HTTPException(status_code=404, detail="Compras not found")
-    return db_compras
+
+@app.get("/cart-items/", response_model=List[CartItemCreate])
+def read_cart_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    cart_items = crud.get_cart_items(db, skip=skip, limit=limit)
+    return cart_items
+
+
+@app.post("/cart-items/", response_model=CartItemCreate)
+def create_cart_item(cart_item: CartItemCreate, db: Session = Depends(get_db)):
+    return crud.create_cart_item(db=db, cart_item=cart_item)
+
+@app.put("/cart-items/{cart_item_id}", response_model=CartItemCreate)
+def update_cart_item(cart_item_id: int, cart_item: CartItemCreate, db: Session = Depends(get_db)):
+    updated_cart_item = crud.update_cart_item(db, cart_item_id, cart_item)
+    if updated_cart_item is None:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+    return updated_cart_item
+
+@app.delete("/cart-items/{cart_item_id}", response_model=CartItemCreate)
+def delete_cart_item(cart_item_id: int, db: Session = Depends(get_db)):
+    deleted_cart_item = crud.delete_cart_item(db, cart_item_id)
+    if deleted_cart_item is None:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+    return deleted_cart_item
