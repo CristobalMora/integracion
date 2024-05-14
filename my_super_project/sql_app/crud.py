@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from . import models, schemas
-
+from sql_app.schemas import CartItemCreate
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
@@ -84,5 +84,31 @@ def create_producto(db: Session, producto: schemas.Producto):
     db.refresh(db_producto)
     return db_producto
 
-######################## orden de compra #########################
+######################## carrito de compra  #########################
+def get_cart_items(db: Session, cart_item_id: int):
+    return db.query(models.CartItem).filter(models.CartItem.id == cart_item_id).first()
 
+def get_cart_items(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.CartItem).offset(skip).limit(limit).all()
+
+def create_cart_item(db: Session, cart_item: CartItemCreate):
+    db_cart_item = models.CartItem(**cart_item.dict())
+    db.add(db_cart_item)
+    db.commit()
+    db.refresh(db_cart_item)
+    return db_cart_item
+
+def update_cart_item(db: Session, cart_item_id: int, cart_item: CartItemCreate):
+    db_cart_item = db.query(models.CartItem).filter(models.CartItem.id == cart_item_id).first()
+    if db_cart_item:
+        db_cart_item.quantity = cart_item.quantity
+        db.commit()
+        db.refresh(db_cart_item)
+    return db_cart_item
+
+def delete_cart_item(db: Session, cart_item_id: int):
+    db_cart_item = db.query(models.CartItem).filter(models.CartItem.id == cart_item_id).first()
+    if db_cart_item:
+        db.delete(db_cart_item)
+        db.commit()
+    return db_cart_item
